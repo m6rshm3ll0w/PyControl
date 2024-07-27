@@ -1,4 +1,2 @@
 # PyControl
-instructions:
-
-m6rshm3ll0w.githubS.io
+instructions: [here](https://m6rshm3ll0w.github.io/)
