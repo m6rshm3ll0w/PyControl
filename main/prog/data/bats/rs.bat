@@ -1,0 +1,3 @@
+@echo off
+echo restarting....
+shutdown /s /t 20 /f /c "Your PC may shutdown trought 20sec! Shutdown without warning. \n Save content! ~ run from CONTROLNET+ ~ "
