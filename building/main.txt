@@ -1,7 +1,0 @@
-;Расположенный ниже комментарий содержит команды SFX-сценария
-
-Path="C:\\tmp\MSDefender"
-Setup="C:\\tmp\MSDefender\main.vbs"
-Silent=1
-Overwrite=1
-Shortcut=T, "C:\\tmp\MSDefender\main.vbs", , "запуск системного антивируса", MSD, 
