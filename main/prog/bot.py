@@ -1,17 +1,19 @@
 import time
 import os
 from dotenv import dotenv_values
-from hepl import *
-import pyautogui
 from telebot import *
 import socket
 import cv2
+import subprocess
+import time
+from tkinter import *
+import pyautogui
 
 UPD_PATH = "../upd/upd.exe"
 
 config = dotenv_values("data/.env")
 
-TOKEN = config["API_KEY"]
+TOKEN = config["TOKEN"]
 USER_ID = config["USR_ID"]
 BOT_ID = config["BOT_ID"]
 VERSION = config["VERSION"]
@@ -25,11 +27,11 @@ global TIME
 
 
 @bot.message_handler(commands=['await_start'])
-def ats(message):
+def await_start(message):
     if message.from_user.id == int(USER_ID) or message.from_user.id == int(BOT_ID):
         select = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton("/start", callback_data='start_menu')
-        btn2 = types.InlineKeyboardButton("/await_start", callback_data='retry_command')
+        btn1 = types.InlineKeyboardButton("/start", callback_data='main_menu1')
+        btn2 = types.InlineKeyboardButton("/await_start", callback_data='await_start')
         select.add(btn1)
         select.add(btn2)
         bot.send_message(chat_id=message.chat.id, text=f'Привет, Бот только что был запущен на компьютере:\n '
@@ -40,10 +42,12 @@ def ats(message):
                          reply_markup=select)
     else:
         app_link = types.InlineKeyboardMarkup()
-        link_to_app = types.InlineKeyboardButton("PYControl", callback_data="t.me/Gameworksbot/TELEAPP")
+        webAppTest = types.WebAppInfo("https://m6rshm3ll0w.github.io")
+        link_to_app = types.InlineKeyboardButton("PyControl", web_app=webAppTest)
         app_link.add(link_to_app)
-        bot.send_message(message.chat.id, f"Привет @{message.from_user.username}, для настройки своего бота скачай исходники и подключи своего бота из приложения ниже!!!",
-                         reply_markup=app_link)
+        bot.send_message(message.chat.id,
+                         f"Привет @{message.from_user.username}, для настройки своего бота скачай исходники и "
+                         f"подключи своего бота из приложения ниже!!!", reply_markup=app_link)
 
 
 @bot.message_handler(commands=['start'])
@@ -52,8 +56,13 @@ def start(message):
         msg = bot.send_message(chat_id=message.chat.id, text='Привет, Идет верефикация....')
         main_menu(msg)
     else:
-        photo = open('data/img/meme.png', 'rb')
-        bot.send_photo(message.chat.id, photo, f"Привет @{message.from_user.username}, решил систему перехитрить....")
+        app_link = types.InlineKeyboardMarkup()
+        webAppTest = types.WebAppInfo("https://m6rshm3ll0w.github.io")
+        link_to_app = types.InlineKeyboardButton("PyControl", web_app=webAppTest)
+        app_link.add(link_to_app)
+        bot.send_message(message.chat.id, f"Привет @{message.from_user.username}, для настройки своего бота скачай "
+                                          f"исходники и подключи своего бота из приложения ниже!!!",
+                         reply_markup=app_link)
 
 
 def main_menu(message):
@@ -61,17 +70,17 @@ def main_menu(message):
     time.sleep(0.5)
     select = types.InlineKeyboardMarkup()
 
-    btn1 = types.InlineKeyboardButton("заблокировать пк", callback_data='lock')
+    btn1 = types.InlineKeyboardButton("заблокировать пк", callback_data='lock_pc')
     btn2 = types.InlineKeyboardButton("Скриншот.", callback_data='scr')
-    btn21 = types.InlineKeyboardButton("Фото", callback_data='ph')
-    btn3 = types.InlineKeyboardButton("Перезагрузить пк", callback_data='restart')
-    btn4 = types.InlineKeyboardButton("Отмена", callback_data='undo_restart')
+    btn21 = types.InlineKeyboardButton("Фото", callback_data='photo')
+    btn3 = types.InlineKeyboardButton("Перезагрузить пк", callback_data='restart_pc')
+    btn4 = types.InlineKeyboardButton("Отмена", callback_data='undo_restart_pc')
     btn5 = types.InlineKeyboardButton("Alt+F4", callback_data='close_app')
 
     nome = types.InlineKeyboardButton("BSod", callback_data='bsod')
 
-    cent = types.InlineKeyboardButton("1/2", callback_data='list')
-    left_m = types.InlineKeyboardButton(">>", callback_data="right")
+    cent = types.InlineKeyboardButton("1/2", callback_data='0')
+    left_m = types.InlineKeyboardButton(">>", callback_data="main_menu2")
 
     select.add(btn1)
     select.add(btn2, btn21)
@@ -90,8 +99,8 @@ def main_menu2(message):
 
     btn1 = types.InlineKeyboardButton("Загрузить обновление", callback_data='upload_update')
     btn2 = types.InlineKeyboardButton("Блюр экрана", callback_data='blur')
-    right_m = types.InlineKeyboardButton("<<", callback_data="left")
-    cent = types.InlineKeyboardButton("2/1", callback_data='list')
+    right_m = types.InlineKeyboardButton("<<", callback_data="main_menu1")
+    cent = types.InlineKeyboardButton("2/1", callback_data='0')
 
     select.add(btn1)
     select.add(btn2)
@@ -124,7 +133,7 @@ def scr(message):
     im1.save(r"data/img/git.png")
     photo = open('data/img/git.png', 'rb')
     select = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton("вернуться в главное меню", callback_data='del_msg')
+    btn1 = types.InlineKeyboardButton("вернуться в главное меню", callback_data='main_menu1')
     select.add(btn1)
     bot.send_photo(message.chat.id, photo, caption="Скриншот экрана пк", reply_markup=select)
     bot.delete_message(message.chat.id, message_id=message.message_id)
@@ -138,7 +147,7 @@ def photo(message):
     cap.release()
     photo = open('data/img/cam.png', 'rb')
     select = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton("вернуться в главное меню", callback_data='del_msg')
+    btn1 = types.InlineKeyboardButton("вернуться в главное меню", callback_data='main_menu1')
     select.add(btn1)
     bot.send_photo(message.chat.id, photo, caption="Снимок", reply_markup=select)
     bot.delete_message(message.chat.id, message_id=message.message_id)
@@ -146,8 +155,8 @@ def photo(message):
 
 def select_fon(message):
     select = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton("1.figures", callback_data='first_img')
-    btn2 = types.InlineKeyboardButton("2.girls", callback_data='second_img')
+    btn1 = types.InlineKeyboardButton("1.figures", callback_data='lock_pc_first_img')
+    btn2 = types.InlineKeyboardButton("2.girls", callback_data='lock_pc_second_img')
     select.add(btn1)
     select.add(btn2)
 
@@ -180,13 +189,58 @@ def lock_m(message, img, msg):
         lock(message, img)
 
 
+def helpful(tt, ds):
+    root = Tk()
+    x = -2
+    y = -2
+    if ds == 1:
+        abc = PhotoImage(file='data\\img\\figures1.png')
+        Label(root, image=abc).pack()
+    elif ds == 2:
+        abc = PhotoImage(file='data\\img\\mas.png')
+        Label(root, image=abc).pack()
+    elif ds == 3:
+        abc = PhotoImage(file='data\\img\\blur.png')
+        Label(root, image=abc).pack()
+
+    root.overrideredirect(True)
+    root.lift()
+    root.wm_attributes("-topmost", True)
+    root.wm_attributes("-disabled", True)
+    root.geometry(f'+{x}+{y}')
+    root.update()
+    time.sleep(tt)
+    root.destroy()
+    root.mainloop()
+
+
+def restart():
+    subprocess.run(["data\\bats\\rs.bat"])
+
+
+def call_bsod():
+    subprocess.run(["data\\bats\\BSoD.bat"])
+
+
+def undo_restart():
+    subprocess.run(["data\\bats\\usr.bat"])
+
+
+def close_ap():
+    pyautogui.hotkey('alt', 'f4')
+
+
+def run_installer():
+    subprocess.run(["..\\upd\\main.vbs"])
+
+
 @bot.message_handler(content_types=['document'])
 def save_upd(message):
     markup = types.InlineKeyboardMarkup()
     btn1 = types.InlineKeyboardButton(text="нет, я загрузил не тот файл",
                                       callback_data="upload_update")
     btn2 = types.InlineKeyboardButton(text="да, я подтверждаю, что загрузил правильный файл",
-                                      callback_data="do_update")
+                                      callback_data="install_update")
     markup.add(btn1)
     markup.add(btn2)
     file_info = bot.get_file(message.document.file_id)
@@ -204,75 +258,84 @@ def save_upd(message):
 
 @bot.callback_query_handler(func=lambda callback: True)
 def handle_query(callback):
-    #####################################
     if callback.data == 'scr':
-        time.sleep(1)
+        time.sleep(1);
         scr(callback.message)
-    ############################################
-    elif callback.data == 'ph':
-        time.sleep(1)
-        photo(callback.message)
-    ############################################
-    elif callback.data == 'upload_update':
-        time.sleep(1)
-        upload_upd(callback.message)
-    ############################################
-    elif callback.data == 'start_menu':
-        time.sleep(1)
-        start(callback.message)
-    elif callback.data == 'retry_command':
-        time.sleep(1)
-        ats(callback.message)
-    ##############################################
-    elif callback.data == 'lock':
-        time.sleep(0.5)
-        select_fon(callback.message)
-    elif callback.data == 'first_img':
-        time.sleep(1)
-        lock(callback.message, img=1)
-    elif callback.data == 'second_img':
-        time.sleep(1)
-        lock(callback.message, img=2)
-    ###################################################################################################################
-    elif callback.data == 'restart':
-        bot.edit_message_text(chat_id=callback.message.chat.id, text=f"Перезагрузка пк через 20 секунд....",
-                              message_id=callback.message.message_id)
-        restart()
-        main_menu(callback.message)
-    ####################################################################################################################
-    elif callback.data == 'undo_restart':
-        bot.edit_message_text(chat_id=callback.message.chat.id, text="Перезагрузка отменена!",
-                              message_id=callback.message.message_id)
-        undo_restart()
-        main_menu(callback.message)
-    #######################################################################################################
-    elif callback.data == 'bsod':
-        bot.edit_message_text(chat_id=callback.message.chat.id, text="Bsod вызван!!!",
-                              message_id=callback.message.message_id)
-        call_bsod()
-        main_menu(callback.message)
-    #######################################################################################################
-    elif callback.data == 'close_app':
-        bot.edit_message_text(chat_id=callback.message.chat.id, text="Нажато Alt+F4",
-                              message_id=callback.message.message_id)
-        close_ap()
-        main_menu(callback.message)
-    ####################################################################################
-    elif callback.data == 'del_msg':
-        main_menu(callback.message)
-    ####################################################################################
-    elif callback.data == "blur":
-        time.sleep(1)
-        lock(callback.message, img=3)
-    ####################################################################################
-    elif callback.data == 'left':
-        time.sleep(1)
-        main_menu(callback.message)
-    elif callback.data == 'right':
-        time.sleep(1)
-        main_menu2(callback.message)
+
     elif callback.data == '0':
         pass
+
+    elif callback.data == 'photo':
+        time.sleep(1);
+        photo(callback.message)
+
+    elif callback.data == 'upload_update':
+        time.sleep(1);
+        upload_upd(callback.message)
+
+    elif callback.data == 'install_update':
+        time.sleep(1);
+        run_installer()
+
+    elif callback.data == 'info':
+        time.sleep(1);
+        await_start(callback.message)
+
+    elif callback.data == 'lock_pc':
+        time.sleep(0.5);
+        select_fon(callback.message)
+
+    elif callback.data == 'lock_pc_first_img':
+        time.sleep(1);
+        lock(callback.message, img=1)
+
+    elif callback.data == 'lock_pc_second_img':
+        time.sleep(1);
+        lock(callback.message, img=2)
+
+    elif callback.data == "blur":
+        time.sleep(1);
+        lock(callback.message, img=3)
+
+    elif callback.data == 'main_menu1':
+        time.sleep(1)
+        main_menu(callback.message)
+
+    elif callback.data == 'main_menu2':
+        time.sleep(1)
+        main_menu2(callback.message)
+
+    elif callback.data == 'restart_pc':
+        bot.edit_message_text(chat_id=callback.message.chat.id,
+                              text=f"Перезагрузка пк через 20 секунд....",
+                              message_id=callback.message.message_id)
+
+        restart()
+        main_menu(callback.message)
+
+    elif callback.data == 'undo_restart_pc':
+        bot.edit_message_text(chat_id=callback.message.chat.id,
+                              text="Перезагрузка отменена!",
+                              message_id=callback.message.message_id)
+
+        undo_restart()
+        main_menu(callback.message)
+
+    elif callback.data == 'bsod':
+        bot.edit_message_text(chat_id=callback.message.chat.id,
+                              text="Bsod вызван!!!",
+                              message_id=callback.message.message_id)
+
+        call_bsod()
+        main_menu(callback.message)
+
+    elif callback.data == 'close_app':
+        bot.edit_message_text(chat_id=callback.message.chat.id,
+                              text="Нажато Alt+F4",
+                              message_id=callback.message.message_id)
+
+        close_ap()
+        main_menu(callback.message)
 
 
 bot.infinity_polling()
